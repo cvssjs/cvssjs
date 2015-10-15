@@ -52,27 +52,27 @@ Usage:
     
 */
 
-var CVSS = function(id, options) {
+var CVSS = function (id, options) {
     this.options = options;
     this.wId = id;
-    e = function(tag) {
+    var e = function (tag) {
         return document.createElement(tag);
-    }
+    };
 
     // Base Group
-    bg = {
-        AV: 'Access Vector',
-        AC: 'Access Complexity',
+    this.bg = {
+        AV: 'Attack Vector',
+        AC: 'Attack Complexity',
         PR: 'Privileges Required',
         UI: 'User Interaction',
         S: 'Scope',
         C: 'Confidentiality',
         I: 'Integrity',
         A: 'Availability'
-    }
+    };
 
     // Base Metrics
-    bm = {
+    this.bm = {
         AV: {
             N: {
                 l: 'Network',
@@ -178,9 +178,10 @@ var CVSS = function(id, options) {
                 d: "<b>Good:</b> There is no impact to availability within the affected scope."
             }
         }
-    }
-    this.bme = {}
-    bmgReg = {
+    };
+    
+    this.bme = {};
+    this.bmgReg = {
         AV: 'NALP',
         AC: 'LH',
         PR: 'NLH',
@@ -189,22 +190,29 @@ var CVSS = function(id, options) {
         C: 'HLN',
         I: 'HLN',
         A: 'HLN'
-    }
-
+    };
+    this.bmoReg = {
+        AV: 'NALP',
+        AC: 'LH',
+        C: 'C',
+        I: 'C',
+        A: 'C'
+    };    
+    var s, f, dl, g, dd, l;
     this.el = document.getElementById(id);
     this.el.appendChild(s = e('style'));
     s.innerHTML = '';
     this.el.appendChild(f = e('form'));
     f.className = 'cvssjs';
     this.calc = f;
-    for (var g in bg) {
+    for (g in this.bg) {
         f.appendChild(dl = e('dl'));
         dl.setAttribute('class', g);
-        var dt = e('dt')
-        dt.innerHTML = bg[g]
+        var dt = e('dt');
+        dt.innerHTML = this.bg[g];
         dl.appendChild(dt);
-        for (var s in bm[g]) {
-            var dd = e('dd');
+        for (s in this.bm[g]) {
+            dd = e('dd');
             dl.appendChild(dd);
             var inp = e('input');
             inp.setAttribute('name', g);
@@ -214,16 +222,16 @@ var CVSS = function(id, options) {
             inp.setAttribute('type', 'radio');
             this.bme[g + s] = inp;
             var me = this;
-            inp.onchange = function() {
+            inp.onchange = function () {
                 me.setMetric(this);
-            }
+            };
             dd.appendChild(inp);
             l = e('label');
             dd.appendChild(l);
             l.setAttribute('for', id + g + s);
             l.appendChild(e('i')).setAttribute('class', g + s);
-            l.appendChild(document.createTextNode(bm[g][s].l + ' '));
-            dd.appendChild(e('small')).innerHTML = bm[g][s].d;
+            l.appendChild(document.createTextNode(this.bm[g][s].l + ' '));
+            dd.appendChild(e('small')).innerHTML = this.bm[g][s].d;
         }
     }
     f.appendChild(e('hr'));
@@ -240,15 +248,15 @@ var CVSS = function(id, options) {
     l.appendChild(document.createTextNode(' '));
     l.appendChild(this.vector = e('a'));
     this.vector.className = 'vector';
-    this.vector.innerHTML = 'AV:_/AC:_/PR:_/UI:_/S:_/C:_/I:_/A:_';
+    this.vector.innerHTML = 'CVSS:3.0/AV:_/AC:_/PR:_/UI:_/S:_/C:_/I:_/A:_';
     
-    if(options.onsubmit) {
+    if (options.onsubmit) {
         f.appendChild(e('hr'));
         this.submitButton = f.appendChild(e('input'));
         this.submitButton.setAttribute('type', 'submit');
         this.submitButton.onclick = options.onsubmit;
     }
-}
+};
 
 CVSS.prototype.severityRatings = [{
     name: "None",
@@ -272,9 +280,10 @@ CVSS.prototype.severityRatings = [{
     top: 10.0
 }];
 
-CVSS.prototype.severityRating = function(score) {
+CVSS.prototype.severityRating = function (score) {
+    var i;
     var severityRatingLength = this.severityRatings.length;
-    for (var i = 0; i < severityRatingLength; i++) {
+    for (i = 0; i < severityRatingLength; i++) {
         if (score >= this.severityRatings[i].bottom && score <= this.severityRatings[i].top) {
             return this.severityRatings[i];
         }
@@ -284,9 +293,9 @@ CVSS.prototype.severityRating = function(score) {
         bottom: 'Not',
         top: 'defined'
     };
-}
+};
 
-CVSS.prototype.calculate = function() {
+CVSS.prototype.calculate = function () {
     var cvssVersion = "3.0";
     var exploitabilityCoefficient = 8.22;
     var scopeCoefficient = 1.08;
@@ -325,7 +334,17 @@ CVSS.prototype.calculate = function() {
             U: 6.42,
             C: 7.52
         },
-        CIA: {
+        C: {
+            N: 0,
+            L: 0.22,
+            H: 0.56
+        },
+        I: {
+            N: 0,
+            L: 0.22,
+            H: 0.56
+        },
+        A: {
             N: 0,
             L: 0.22,
             H: 0.56
@@ -334,64 +353,39 @@ CVSS.prototype.calculate = function() {
 
     };
 
-
-    AV = this.calc.elements['AV'].value;
-    AC = this.calc.elements['AC'].value;
-    PR = this.calc.elements['PR'].value;
-    UI = this.calc.elements['UI'].value;
-    S = this.calc.elements['S'].value;
-    C = this.calc.elements['C'].value;
-    I = this.calc.elements['I'].value;
-    A = this.calc.elements['A'].value;
-    // We need values for all Base Score metrics to calculate scores.
-    // If Base Score parameters are undefined, return an error.
-    if (typeof AV === "undefined" ||
-        typeof AC === "undefined" ||
-        typeof PR === "undefined" ||
-        typeof UI === "undefined" ||
-        typeof S === "undefined" ||
-        typeof C === "undefined" ||
-        typeof I === "undefined" ||
-        typeof A === "undefined") {
-
-        return "??"; // TODO: need to catch and return sensible error value
-    }
-
+    var p;
+    var val = {}, metricWeight = {};
     try {
-        // BASE METRICS
-        var metricWeightAV = Weight.AV[AV];
-        var metricWeightAC = Weight.AC[AC];
-        var metricWeightPR = Weight.PR[S][PR];
-        var metricWeightUI = Weight.UI[UI];
-        var metricWeightS = Weight.S[S];
-        var metricWeightC = Weight.CIA[C];
-        var metricWeightI = Weight.CIA[I];
-        var metricWeightA = Weight.CIA[A];
-
+        for (p in this.bg) {
+            val[p] = this.calc.elements[p].value;
+            if (typeof val[p] === "undefined" || val[p] == '') {
+                return "?";
+            };
+            metricWeight[p] = Weight[p][val[p]];
+        }
     } catch (err) {
-        return "?"; // TODO: need to catch and return sensible error value & do a better job of specifying *which* parm is at fault.
+        return err; // TODO: need to catch and return sensible error value & do a better job of specifying *which* parm is at fault.
     }
-
-
+    metricWeight['PR'] = Weight['PR'][val['S']][val['PR']];
     //
     // CALCULATE THE CVSS BASE SCORE
     //
-
+    try {
     var baseScore;
     var impactSubScore;
-    var exploitabalitySubScore = exploitabilityCoefficient * metricWeightAV * metricWeightAC * metricWeightPR * metricWeightUI;
-    var impactSubScoreMultiplier = (1 - ((1 - metricWeightC) * (1 - metricWeightI) * (1 - metricWeightA)));
-
-    if (S === 'U') {
-        impactSubScore = metricWeightS * impactSubScoreMultiplier;
+    var exploitabalitySubScore = exploitabilityCoefficient * metricWeight['AV'] * metricWeight['AC'] * metricWeight['PR'] * metricWeight['UI'];
+    var impactSubScoreMultiplier = (1 - ((1 - metricWeight['C']) * (1 - metricWeight['I']) * (1 - metricWeight['A'])));
+    if (val['S'] === 'U') {
+        impactSubScore = metricWeight['S'] * impactSubScoreMultiplier;
     } else {
-        impactSubScore = metricWeightS * (impactSubScoreMultiplier - 0.029) - 3.25 * Math.pow(impactSubScoreMultiplier - 0.02, 15);
+        impactSubScore = metricWeight['S'] * (impactSubScoreMultiplier - 0.029) - 3.25 * Math.pow(impactSubScoreMultiplier - 0.02, 15);
     }
+
 
     if (impactSubScore <= 0) {
         baseScore = 0;
     } else {
-        if (S === 'U') {
+        if (val['S'] === 'U') {
             baseScore = Math.min((exploitabalitySubScore + impactSubScore), 10);
         } else {
             baseScore = Math.min((exploitabalitySubScore + impactSubScore) * scopeCoefficient, 10);
@@ -400,14 +394,17 @@ CVSS.prototype.calculate = function() {
 
     baseScore = Math.ceil(baseScore * 10) / 10;
     return baseScore;
-}
+    } catch (err) {
+        return err;
+    }
+};
 
 CVSS.prototype.get = function() {
     return {
         score: this.score.innerHTML,
         vector: this.vector.innerHTML
     }
-}
+};
 
 CVSS.prototype.setMetric = function(a) {
     var vectorString = this.vector.innerHTML;
@@ -417,19 +414,23 @@ CVSS.prototype.setMetric = function(a) {
     //e("E" + a.id).checked = true;
     var newVec = vectorString.replace(new RegExp('\\b' + a.name + ':.'), a.name + ':' + a.value);
     this.set(newVec);
-}
+};
 
 CVSS.prototype.set = function(vec) {
-    var newVec = '';
+    var newVec = 'CVSS:3.0/';
     sep = '';
-    for (m in bm) {
-        if ((match = (new RegExp('\\b(' + m + ':[' + bmgReg[m] + '])')).exec(vec)) != null) {
+    for (m in this.bm) {
+        if ((match = (new RegExp('\\b(' + m + ':[' + this.bmgReg[m] + '])')).exec(vec)) != null) {
             check = match[0].replace(':', '')
             this.bme[check].checked = true;
             newVec = newVec + sep + match[0];
+        } else if ((m in {C:'', I:'', A:''}) && (match = (new RegExp('\\b(' + m + ':C)')).exec(vec)) != null) {
+            // compatibility with v2 only for CIA:C
+            this.bme[m + 'H'].checked = true;
+            newVec = newVec + sep + m + ':H';
         } else {
             newVec = newVec + sep + m + ':_';
-            for (var j in bm[m]) {
+            for (var j in this.bm[m]) {
                 this.bme[m + j].checked = false;
             }
         }
@@ -449,4 +450,4 @@ CVSS.prototype.update = function(newVec) {
     if (this.options != undefined && this.options.onchange != undefined) {
         this.options.onchange();
     }
-}
+};
