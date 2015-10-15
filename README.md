@@ -26,6 +26,10 @@ Usage:
     // set a vector
     c.set('CVSS:3.0/AV:L/AC:L/PR:N/UI:N/S:C/C:N/I:N/A:L');
     
+    // it is also backwards compatible with CVSS v2 vectors, 
+    // buts only sets the parameters that can be set without ambiguity.
+    c.set('AV:L/AC:L/Au:N/C:P/I:P/A:C');
+    
     //get the value
     c.get() returns an object like:
       {
