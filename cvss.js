@@ -197,7 +197,7 @@ var CVSS = function (id, options) {
         C: 'C',
         I: 'C',
         A: 'C'
-    };    
+    };
     var s, f, dl, g, dd, l;
     this.el = document.getElementById(id);
     this.el.appendChild(s = e('style'));
@@ -234,7 +234,7 @@ var CVSS = function (id, options) {
             dd.appendChild(e('small')).innerHTML = this.bm[g][s].d;
         }
     }
-    f.appendChild(e('hr'));
+    //f.appendChild(e('hr'));
     f.appendChild(dl = e('dl'));
     dl.innerHTML = '<dt>Severity&sdot;Score&sdot;Vector</dt>';
     dd = e('dd');
@@ -293,6 +293,15 @@ CVSS.prototype.severityRating = function (score) {
         bottom: 'Not',
         top: 'defined'
     };
+};
+
+CVSS.prototype.valueofradio = function(e) {
+    for(var i = 0; i < e.length; i++) {
+        if (e[i].checked) {
+            return e[i].value;
+        }
+    }
+    return null;
 };
 
 CVSS.prototype.calculate = function () {
@@ -357,35 +366,35 @@ CVSS.prototype.calculate = function () {
     var val = {}, metricWeight = {};
     try {
         for (p in this.bg) {
-            val[p] = this.calc.elements[p].value;
-            if (typeof val[p] === "undefined" || val[p] == '') {
+            val[p] = this.valueofradio(this.calc.elements[p]);
+            if (typeof val[p] === "undefined" || val[p] === null) {
                 return "?";
-            };
+            }
             metricWeight[p] = Weight[p][val[p]];
         }
     } catch (err) {
         return err; // TODO: need to catch and return sensible error value & do a better job of specifying *which* parm is at fault.
     }
-    metricWeight['PR'] = Weight['PR'][val['S']][val['PR']];
+    metricWeight.PR = Weight.PR[val.S][val.PR];
     //
     // CALCULATE THE CVSS BASE SCORE
     //
     try {
     var baseScore;
     var impactSubScore;
-    var exploitabalitySubScore = exploitabilityCoefficient * metricWeight['AV'] * metricWeight['AC'] * metricWeight['PR'] * metricWeight['UI'];
-    var impactSubScoreMultiplier = (1 - ((1 - metricWeight['C']) * (1 - metricWeight['I']) * (1 - metricWeight['A'])));
-    if (val['S'] === 'U') {
-        impactSubScore = metricWeight['S'] * impactSubScoreMultiplier;
+    var exploitabalitySubScore = exploitabilityCoefficient * metricWeight.AV * metricWeight.AC * metricWeight.PR * metricWeight.UI;
+    var impactSubScoreMultiplier = (1 - ((1 - metricWeight.C) * (1 - metricWeight.I) * (1 - metricWeight.A)));
+    if (val.S === 'U') {
+        impactSubScore = metricWeight.S * impactSubScoreMultiplier;
     } else {
-        impactSubScore = metricWeight['S'] * (impactSubScoreMultiplier - 0.029) - 3.25 * Math.pow(impactSubScoreMultiplier - 0.02, 15);
+        impactSubScore = metricWeight.S * (impactSubScoreMultiplier - 0.029) - 3.25 * Math.pow(impactSubScoreMultiplier - 0.02, 15);
     }
 
 
     if (impactSubScore <= 0) {
         baseScore = 0;
     } else {
-        if (val['S'] === 'U') {
+        if (val.S === 'U') {
             baseScore = Math.min((exploitabalitySubScore + impactSubScore), 10);
         } else {
             baseScore = Math.min((exploitabalitySubScore + impactSubScore) * scopeCoefficient, 10);
@@ -403,7 +412,7 @@ CVSS.prototype.get = function() {
     return {
         score: this.score.innerHTML,
         vector: this.vector.innerHTML
-    }
+    };
 };
 
 CVSS.prototype.setMetric = function(a) {
@@ -418,13 +427,14 @@ CVSS.prototype.setMetric = function(a) {
 
 CVSS.prototype.set = function(vec) {
     var newVec = 'CVSS:3.0/';
-    sep = '';
-    for (m in this.bm) {
-        if ((match = (new RegExp('\\b(' + m + ':[' + this.bmgReg[m] + '])')).exec(vec)) != null) {
-            check = match[0].replace(':', '')
+    var sep = '';
+    for (var m in this.bm) {
+        var match = (new RegExp('\\b(' + m + ':[' + this.bmgReg[m] + '])')).exec(vec);
+        if (match !== null) {
+            var check = match[0].replace(':', '');
             this.bme[check].checked = true;
             newVec = newVec + sep + match[0];
-        } else if ((m in {C:'', I:'', A:''}) && (match = (new RegExp('\\b(' + m + ':C)')).exec(vec)) != null) {
+        } else if ((m in {C:'', I:'', A:''}) && (match = (new RegExp('\\b(' + m + ':C)')).exec(vec)) !== null) {
             // compatibility with v2 only for CIA:C
             this.bme[m + 'H'].checked = true;
             newVec = newVec + sep + m + ':H';
@@ -447,7 +457,7 @@ CVSS.prototype.update = function(newVec) {
     this.severity.className = rating.name + ' severity';
     this.severity.innerHTML = rating.name + '<sub>' + rating.bottom + ' - ' + rating.top + '</sub>';
     this.severity.title = rating.bottom + ' - ' + rating.top;
-    if (this.options != undefined && this.options.onchange != undefined) {
+    if (this.options !== undefined && this.options.onchange !== undefined) {
         this.options.onchange();
     }
 };

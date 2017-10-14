@@ -20,106 +20,103 @@
  */
 
 .cvssjs i {
-    width: 40px;
-    height: 40px;
+    width: 1em;
+    height: 1em;
     display: inline-block;
     background: url("cvssicons.png") 0 0 no-repeat;
     vertical-align: middle;
+    background-size: cover;
     margin-right: 4px;
+    margin: 2px;
+    font-size: 40px;
 }
 
 .cvssjs i.AVN {
-    background-position: -80px -200px;
-    width: 65px;
+    background-position: -3em 0;
 }
 
 .cvssjs i.AVA {
-    background-position: -80px -160px;
-    width: 65px;
+    background-position: -2em 0;
 }
 
 .cvssjs i.AVL {
-    background-position: -80px -120px;
-    width: 65px;
+    background-position: -1em 0;
 }
 
 .cvssjs i.AVP {
-    background-position: -80px -80px;
-    width: 65px;
+    background-position: 0 0;
 }
 
 .cvssjs i.ACL {
-    background-position: -40px -120px;
+    background-position: -4em 0;
 }
 
 .cvssjs i.ACH {
-    background-position: -40px -160px;
+    background-position: -5em 0;
 }
 
 .cvssjs i.PRN {
-    background-position: -0px -240px;
+    background-position: -6em 0;
 }
 
 .cvssjs i.PRL {
-    background-position: -40px -240px;
+    background-position: -7em 0;
 }
 
 .cvssjs i.PRH {
-    background-position: -40px -200px;
+    background-position: -8em 0;
 }
 
 .cvssjs i.UIN {
-    background-position: -80px -280px;
-    width: 65px;
+    background-position: -10em 0;
 }
 
 .cvssjs i.UIR {
-    background-position: -80px -240px;
-    width: 65px;
+    background-position: -9em 0;
 }
 
 .cvssjs i.SC {
-    background-position: 0px -160px;
+    background-position: -11em 0;
 }
 
 .cvssjs i.SU {
-    background-position: 0px -200px;
+    background-position: -10em 0;
 }
 
 .cvssjs i.CH {
-    background-position: -0px -40px;
+    background-position: -14em 0;
 }
 
 .cvssjs i.CL {
-    background-position: -40px -40px;
+    background-position: -13em 0;
 }
 
 .cvssjs i.CN {
-    background-position: -80px -40px;
+    background-position: -12em 0;
 }
 
 .cvssjs i.IH {
-    background-position: -0px -80px;
+    background-position: -16em 0;
 }
 
 .cvssjs i.IL {
-    background-position: -40px -80px;
+    background-position: -17em 0;
 }
 
 .cvssjs i.IN {
-    background-position: 0px -120px;
+    background-position: -15em 0;
 }
 
 .cvssjs i.AH {
-    background-position: -80px 0px;
+    background-position: -20em 0;
 }
 
 .cvssjs i.AL {
-    background-position: -40px 0px;
+    background-position: -19em 0;
 }
 
 .cvssjs i.AN {
-    background-position: 0px 0px;
+    background-position: -18em 0;
 }
 
 .cvssjs a {
@@ -142,9 +139,9 @@
     color: #EEEEEE;
     padding: 5px;
     font-size: 60%;
-    font-weight: normal;
+    overflow-x: hidden;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: .5px;
 }
 .cvssjs dl:hover, .cvssjs dl:focus {
     background-color: #676a60;
@@ -161,7 +158,7 @@
 
 .cvssjs dd label,
 #predef span {
-    min-width: 8.5em;
+    min-width: 7.5em;
     padding: 0px 2px 0px 2px;
     display: block;
     margin: 1px;
@@ -267,7 +264,6 @@
 
 .cvssjs hr {
     border-style: dashed;
-/*    max-width: 35em;*/
     color: #949ca0;
 }
 
@@ -291,8 +287,6 @@
 }
 
 .cvssjs .results {
-    min-width: 32em;
-    max-width: 32em;
     padding: 7px;
 }
 
