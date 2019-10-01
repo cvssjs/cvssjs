@@ -1,0 +1,51 @@
+<html>
+
+<head>
+    <title>CVSS v3 Base Score Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" media="all" href="cvss.css">
+    <script src="cvss.js"></script>
+    <style>
+        body {
+            background-color: #e0e4e4;
+            font-family: arial;
+            padding: 1em;
+        }
+        #footer {
+            font-size: x-small;
+        }
+
+        #footer, sH3 {
+            color: gray;
+        }
+@media screen and (min-width: 720px) {
+        #cvssboard {
+            width: 640px;
+        }
+}
+    </style>
+</head>
+
+<body>
+    <p>CVSS v3 Base Score Calculator</p>
+    <div id="cvssboard">
+    </div>
+    <small id="footer">
+Copyright 2017 © Chandan
+<br/>Free to use, copy, modification under a BSD like licence.
+<br/>CVSS (Common Vulnerability Scoring System) is a free and open standard. It is owned and managed by <a href="http://www.first.org/">FIRST.Org</a>.</small>
+    <script>
+        var c = new CVSS("cvssboard", {
+            onchange: function() {
+                window.location.hash = c.get().vector;
+                c.vector.setAttribute('href', '#' + c.get().vector)
+            }
+        });
+        if (window.location.hash.substring(1).length > 0) {
+            c.set(decodeURIComponent(window.location.hash.substring(1)));
+        }
+    </script>
+
+</body>
+
+</html>
