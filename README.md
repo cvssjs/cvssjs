@@ -1,4 +1,4 @@
-#CVSSjs
+# CVSSjs
 
 CVSS (Common Vulnerability Scoring System) Calculator
 
@@ -6,7 +6,7 @@ CVSS (Common Vulnerability Scoring System) Calculator
 
 CVSSjs Version 0.3.1 beta
 
-Usage:
+## Usage:
 
     //include the cvss.js script 
     <script src="http://cvssjs.github.io/cvssjs/cvss.js"></script>
@@ -38,6 +38,5 @@ Usage:
       }
 
 
-Copyright (c) 2015-2019, Chandan B.N.
-
+Copyright (c) 2015-2019, Chandan B.N.<br>
 Copyright (c) 2019, FIRST.ORG, INC
